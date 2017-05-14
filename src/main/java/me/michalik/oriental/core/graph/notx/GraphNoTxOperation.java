@@ -34,13 +34,7 @@ public class GraphNoTxOperation {
     }
 
     public ResultVertex findVertexById(ORID orid){
-        try{
-            return new ResultVertex(this.orientGraphNoTx.getVertex(orid), this.orientGraphNoTx);
-        }catch (Exception e){
-            throw e;
-        }finally {
-            this.orientGraphNoTx.shutdown();
-        }
+        return new ResultVertex(this.orientGraphNoTx.getVertex(orid), this.orientGraphNoTx);
     }
 
     public <R> R findEdgeById(ORID orid, Function<OrientEdge, ? extends R> mapper) {
@@ -54,13 +48,7 @@ public class GraphNoTxOperation {
     }
 
     public ResultEdge findEdgeById(ORID orid){
-        try{
-            return new ResultEdge(this.orientGraphNoTx.getEdge(orid), this.orientGraphNoTx);
-        }catch (Exception e){
-            throw e;
-        }finally {
-            this.orientGraphNoTx.shutdown();
-        }
+        return new ResultEdge(this.orientGraphNoTx.getEdge(orid), this.orientGraphNoTx);
     }
 
     public <R> R query(String query, Function<Iterable<OrientElement>, ? extends R> mapper, Object... objects) {
