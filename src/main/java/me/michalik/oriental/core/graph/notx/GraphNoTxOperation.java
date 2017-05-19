@@ -2,6 +2,7 @@ package me.michalik.oriental.core.graph.notx;
 
 
 import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.sql.query.OSQLQuery;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
@@ -9,11 +10,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientElement;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import me.michalik.oriental.core.graph.notx.results.ResultEdge;
+import me.michalik.oriental.core.graph.notx.results.ResultEdgeIterable;
 import me.michalik.oriental.core.graph.notx.results.ResultVertex;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import me.michalik.oriental.core.graph.notx.results.ResultVertexIterable;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class GraphNoTxOperation {
 
@@ -23,9 +24,9 @@ public class GraphNoTxOperation {
         this.orientGraphNoTx = orientGraphNoTx;
     }
 
-    public <R> R findVertexById(ORID orid, Function<OrientVertex, ? extends R> mapper) {
-        try {
-            return mapper.apply(this.orientGraphNoTx.getVertex(orid));
+    public void db(Consumer<OrientGraphNoTx> graphNoTxConsumer){
+        try{
+            graphNoTxConsumer.accept(this.orientGraphNoTx);
         }catch (Exception e){
             throw e;
         }finally {
@@ -34,72 +35,58 @@ public class GraphNoTxOperation {
     }
 
     public ResultVertex findVertexById(ORID orid){
-        return new ResultVertex(this.orientGraphNoTx.getVertex(orid), this.orientGraphNoTx);
-    }
-
-    public <R> R findEdgeById(ORID orid, Function<OrientEdge, ? extends R> mapper) {
-        try {
-            return mapper.apply(this.orientGraphNoTx.getEdge(orid));
-        }catch (Exception e){
-            throw e;
-        }finally {
-            this.orientGraphNoTx.shutdown();
-        }
+        return new ResultVertex(this.getVertexById(orid), this.orientGraphNoTx);
     }
 
     public ResultEdge findEdgeById(ORID orid){
-        return new ResultEdge(this.orientGraphNoTx.getEdge(orid), this.orientGraphNoTx);
+        return new ResultEdge(this.getEdgeById(orid), this.orientGraphNoTx);
     }
 
-    public <R> R query(String query, Function<Iterable<OrientElement>, ? extends R> mapper, Object... objects) {
-        return this.query(new OSQLSynchQuery<R>(query), mapper, objects);
+    public ResultVertexIterable queryVertex(String query, Object... objects){
+        return this.queryVertex(new OSQLSynchQuery(query), objects);
     }
 
-    public <R> R query(OSQLQuery<R> query, Function<Iterable<OrientElement>, ? extends R> mapper, Object... objects){
-        try{
-//            TODO - tutaj chyba trzeba zrobić loopa na iterable i mapper wywołać na pojedynczym
-            return mapper.apply(this.orientGraphNoTx.command(query).execute(objects));
-        }catch (Exception e){
-            throw e;
-        }finally {
-            this.orientGraphNoTx.shutdown();
-        }
+    public ResultVertexIterable queryVertex(OSQLQuery query, Object... objects) {
+        return new ResultVertexIterable(this.orientGraphNoTx.command(query).execute(objects), this.orientGraphNoTx);
     }
 
-    public <R> R queryVertex(String query, Function<Iterable<OrientVertex>, ? extends R> mapper, Object... objects) {
-        return this.queryVertex(new OSQLSynchQuery<R>(query), mapper, objects);
+    public ResultEdgeIterable queryEdge(String query, Object... objects){
+        return this.queryEdge(new OSQLSynchQuery(query), objects);
     }
 
-    public <R> R queryVertex(OSQLQuery<R> query, Function<Iterable<OrientVertex>, ? extends R> mapper, Object... objects){
-        try{
-            return mapper.apply(this.orientGraphNoTx.command(query).execute(objects));
-        }catch (Exception e){
-            throw e;
-        }finally {
-            this.orientGraphNoTx.shutdown();
-        }
+    public ResultEdgeIterable queryEdge(OSQLQuery query, Object... objects) {
+        return new ResultEdgeIterable(this.orientGraphNoTx.command(query).execute(objects), this.orientGraphNoTx);
     }
 
-    public <R> R queryEdge(String query, Function<Iterable<OrientEdge>, ? extends R> mapper, Object... objects) {
-        return this.queryEdge(new OSQLSynchQuery<R>(query), mapper, objects);
+    public ORecordId saveVertex(Object id, Consumer<OrientVertex> consumer){
+        return this.saveVertex(this.orientGraphNoTx.addVertex(id), consumer);
     }
 
-    public <R> R queryEdge(OSQLQuery<R> query, Function<Iterable<OrientEdge>, ? extends R> mapper, Object... objects){
-        try{
-            return mapper.apply(this.orientGraphNoTx.command(query).execute(objects));
-        }catch (Exception e){
-            throw e;
-        }finally {
-            this.orientGraphNoTx.shutdown();
-        }
+    public ORecordId saveVertex(String className, String clusterName, Consumer<OrientVertex> consumer){
+        return this.saveVertex(this.orientGraphNoTx.addVertex(className, clusterName), consumer);
     }
 
-    public <R> R update(ORID orid, Consumer<OrientElement> update, Function<OrientElement, ? extends R> mapper) {
+    private ORecordId saveVertex(OrientVertex orientVertex, Consumer<OrientVertex> consumer){
+        consumer.accept(orientVertex);
+        return this.save(orientVertex);
+    }
+
+    public ORecordId saveEdge(Object id, Consumer<OrientEdge> consumer){
+        return this.saveEdge(this.orientGraphNoTx.addVertex(id), consumer);
+    }
+
+    public ORecordId saveEdge(String className, String clusterName, Consumer<OrientEdge> consumer){
+        return this.saveEdge(this.orientGraphNoTx.addVertex(className, clusterName), consumer);
+    }
+
+    private ORecordId saveEdge(OrientEdge orientEdge, Consumer<OrientEdge> consumer){
+        consumer.accept(orientEdge);
+        return this.save(orientEdge);
+    }
+
+    private ORecordId save(OrientElement orientElement){
         try {
-            OrientElement orientElement = this.orientGraphNoTx.getElement(orid);
-            update.accept(orientElement);
-            orientElement.save();
-            return mapper.apply(orientElement);
+            return new ORecordId(orientElement.getIdentity());
         }catch (Exception e){
             throw e;
         }finally {
@@ -107,24 +94,9 @@ public class GraphNoTxOperation {
         }
     }
 
-
-
-
-    public <T> T save() {
-        OrientVertex orientVertex = this.orientGraphNoTx.addVertex(null);
-        orientVertex.save();
-        throw new NotImplementedException();
-    }
-
-
-    public void delete(){
-        throw new NotImplementedException();
-    }
-
-    public ResultVertex testById(ORID orid){
+    public void updateVertex(ORID orid, Consumer<OrientVertex> consumer){
         try {
-
-            return new ResultVertex(this.orientGraphNoTx.getVertex(orid), orientGraphNoTx);
+            consumer.accept(this.getVertexById(orid));
         }catch (Exception e){
             throw e;
         }finally {
@@ -132,21 +104,24 @@ public class GraphNoTxOperation {
         }
     }
 
-//    public <R> R test(ORID orid, Function<OrientVertex, ? extends R> mapper) {
-//        /*
-//        * Package java.util.function
-//        *
-//        * Predicate<? super T> predicate
-//        * Comparator<? super T> comparator
-//        * Collector<? super T, A, R> collector
-//        *
-//        * */
-//        OrientVertex orientVertex = this.orientGraphNoTx.getVertex(orid);
-//        return mapper.apply(orientVertex);
-//    }
-//
-//    public <R> R test2(ORID orid, Function<ResultVertex, ? extends R> mapper) {
-//        OrientVertex orientVertex = this.orientGraphNoTx.getVertex(orid);
-//        return mapper.apply(new ResultVertex(orientVertex, this.orientGraphNoTx));
-//    }
+    public void updatEdge(ORID orid, Consumer<OrientEdge> consumer){
+        try {
+            consumer.accept(this.getEdgeById(orid));
+        }catch (Exception e){
+            throw e;
+        }finally {
+            this.orientGraphNoTx.shutdown();
+        }
+    }
+
+    private OrientVertex getVertexById(ORID orid){
+        return this.orientGraphNoTx.getVertex(orid);
+    }
+
+    private OrientEdge getEdgeById(ORID orid){
+        return this.orientGraphNoTx.getEdge(orid);
+    }
+
+
+
 }

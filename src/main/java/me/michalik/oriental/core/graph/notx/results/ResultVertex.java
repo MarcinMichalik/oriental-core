@@ -16,7 +16,7 @@ public class ResultVertex {
         this.orientGraphNoTx = orientGraphNoTx;
     }
 
-    public <R> R map(Function<OrientVertex, R> mapper){
+    public <R> R map(Function<OrientVertex, ? extends R> mapper){
         try{
             return mapper.apply(this.orientVertex);
         }catch (Exception e){
@@ -41,6 +41,16 @@ public class ResultVertex {
             throw e;
         }else{
             return this;
+        }
+    }
+
+    public void remove(){
+        try{
+            this.orientVertex.remove();
+        }catch (Exception e){
+            throw e;
+        }finally {
+            this.orientGraphNoTx.shutdown();
         }
     }
 }

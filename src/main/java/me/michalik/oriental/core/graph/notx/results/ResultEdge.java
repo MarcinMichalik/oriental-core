@@ -43,4 +43,14 @@ public class ResultEdge {
             return this;
         }
     }
+
+    public void remove(){
+        try{
+            this.orientEdge.remove();
+        }catch (Exception e){
+            throw e;
+        }finally {
+            this.orientGraphNoTx.shutdown();
+        }
+    }
 }

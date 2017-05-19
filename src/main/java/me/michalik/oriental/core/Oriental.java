@@ -31,45 +31,4 @@ public class Oriental {
         return new DocumentOperation(orientGraphFactory.getDatabase());
     }
 
-
-
-//    public <T> T findBydId(ORID orid, MapGraphTx mapGraphTx) throws Exception {
-//        OrientGraph orientGraph = this.orientGraphFactory.getTx();
-//
-//        try{
-//            OrientElement orientElement = orientGraph.getElement(orid);
-//            return (T) mapGraphTx.mapVertex(orientElement, orientGraph);
-//        }catch (Exception e){
-//            throw e;
-//        }finally {
-//            orientGraph.shutdown();
-//        }
-//    }
-//
-//    public <T> T findBydId(ORID orid, MapGraphNoTx mapGraphNoTx) throws Exception {
-//        OrientGraphNoTx orientGraphNoTx = this.orientGraphFactory.getNoTx();
-//
-//        try{
-//            OrientElement orientElement = orientGraphNoTx.getElement(orid);
-//            OrientVertex orientVertex = (OrientVertex) orientElement;
-////            return (T) mapGraphNoTx.mapVertex(orientElement, orientGraphNoTx);
-//            return this.findBydId(orid, mapGraphNoTx);
-//        }catch (Exception e){
-//            throw e;
-//        }finally {
-//            orientGraphNoTx.shutdown();
-//        }
-//    }
-//
-//    private <T> T findById(ORID orid, OrientBaseGraph orientBaseGraph, MapGraph mapGraph){
-//        try{
-//            OrientElement orientElement = orientBaseGraph.getElement(orid);
-//            return (T) mapGraph.map(orientElement, orientBaseGraph);
-//        }catch (Exception e){
-//            throw e;
-//        }finally {
-//            orientBaseGraph.shutdown();
-//        }
-//    }
-
 }
