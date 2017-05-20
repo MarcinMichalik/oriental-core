@@ -6,7 +6,7 @@
 
     <groupId>me.michalik</groupId>
     <artifactId>oriental-core</artifactId>
-    <version>1.0.1-alpha</version>
+    <version>1.0.2-alpha</version>
 
     <properties>
         <orientdb.version>2.2.18</orientdb.version>
