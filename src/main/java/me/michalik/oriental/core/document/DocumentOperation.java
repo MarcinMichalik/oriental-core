@@ -27,9 +27,6 @@ public class DocumentOperation {
     public void db(Consumer<ODatabaseDocumentTx> consumer){
         consumer.accept(this.oDatabaseDocumentTx);
 //        this.oDatabaseDocumentTx.setUser(new OUser(""));
-
-//        this.oDatabaseDocumentTx.browseClass()
-//        this.oDatabaseDocumentTx.browseCluster()
     }
 
     public DocumentResult load(ORID orid){
