@@ -165,6 +165,4 @@ public class GraphNoTxOperation {
         return this.orientGraphNoTx.getEdge(orid);
     }
 
-
-
 }
