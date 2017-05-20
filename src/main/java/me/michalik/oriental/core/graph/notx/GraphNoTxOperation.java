@@ -14,7 +14,10 @@ import me.michalik.oriental.core.graph.notx.results.ResultEdgeIterable;
 import me.michalik.oriental.core.graph.notx.results.ResultVertex;
 import me.michalik.oriental.core.graph.notx.results.ResultVertexIterable;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class GraphNoTxOperation {
 
@@ -112,6 +115,46 @@ public class GraphNoTxOperation {
         }finally {
             this.orientGraphNoTx.shutdown();
         }
+    }
+
+    public ResultVertexIterable findVertices(String className){
+        return this.findVertices(className, true);
+    }
+
+    public ResultVertexIterable findVertices(String className, boolean polymorphic){
+        List<OrientVertex> orientVertices = StreamSupport
+                .stream(this.orientGraphNoTx.getVerticesOfClass(className, polymorphic).spliterator(), false)
+                .map(vertex -> (OrientVertex) vertex)
+                .collect(Collectors.toList());
+        return new ResultVertexIterable(orientVertices, this.orientGraphNoTx);
+    }
+
+    public ResultVertexIterable findVertices(String label, String[] key, Object[] value){
+        List<OrientVertex> orientVertices = StreamSupport
+                .stream(this.orientGraphNoTx.getVertices(label, key, value).spliterator(), false)
+                .map(vertex -> (OrientVertex) vertex)
+                .collect(Collectors.toList());
+        return new ResultVertexIterable(orientVertices, this.orientGraphNoTx);
+    }
+
+    public ResultEdgeIterable findEdges(String className){
+        return this.findEdges(className, true);
+    }
+
+    public ResultEdgeIterable findEdges(String className, boolean polymorphic){
+        List<OrientEdge> orientEdges = StreamSupport
+                .stream(this.orientGraphNoTx.getEdgesOfClass(className, polymorphic).spliterator(), false)
+                .map(edge -> (OrientEdge) edge)
+                .collect(Collectors.toList());
+        return new ResultEdgeIterable(orientEdges, this.orientGraphNoTx);
+    }
+
+    public ResultEdgeIterable findEdges(String key, Object value){
+        List<OrientEdge> orientEdges = StreamSupport
+                .stream(this.orientGraphNoTx.getEdges(key, value).spliterator(), false)
+                .map(edge -> (OrientEdge) edge)
+                .collect(Collectors.toList());
+        return new ResultEdgeIterable(orientEdges, this.orientGraphNoTx);
     }
 
     private OrientVertex getVertexById(ORID orid){
