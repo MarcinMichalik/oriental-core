@@ -1,7 +1,10 @@
 package me.michalik.oriental.core;
 
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import me.michalik.oriental.core.document.DocumentOperation;
 import me.michalik.oriental.core.graph.notx.GraphNoTxOperation;
 import me.michalik.oriental.core.graph.tx.GraphOperation;
@@ -20,15 +23,26 @@ public class Oriental {
     }
 
     public GraphOperation graphOperation(){
-        return new GraphOperation(orientGraphFactory.getTx());
+        return new GraphOperation(this.getOrientGraph());
     }
 
     public GraphNoTxOperation graphNoTxOperation(){
-        return new GraphNoTxOperation(orientGraphFactory.getNoTx());
+        return new GraphNoTxOperation(this.getOrientGraphNoTx());
     }
 
     public DocumentOperation documentOperation(){
-        return new DocumentOperation(orientGraphFactory.getDatabase());
+        return new DocumentOperation(this.getDatabaseDocumentTx());
     }
 
+    public OrientGraph getOrientGraph(){
+        return this.orientGraphFactory.getTx();
+    }
+
+    public OrientGraphNoTx getOrientGraphNoTx(){
+        return this.orientGraphFactory.getNoTx();
+    }
+
+    public ODatabaseDocumentTx getDatabaseDocumentTx(){
+        return this.orientGraphFactory.getDatabase();
+    }
 }
