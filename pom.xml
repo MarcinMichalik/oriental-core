@@ -6,7 +6,7 @@
 
     <groupId>me.michalik</groupId>
     <artifactId>oriental-core</artifactId>
-    <version>1.0.2-alpha</version>
+    <version>1.0.0-alpha</version>
 
     <properties>
         <orientdb.version>2.2.18</orientdb.version>
@@ -54,4 +54,12 @@
             <url>https://api.bintray.com/maven/marcinmichalik/maven/oriental-core/;publish=1</url>
         </repository>
     </distributionManagement>
+
+    <!--<distributionManagement>-->
+        <!--<repository>-->
+            <!--<id>bintray-marcinmichalik-oriental</id>-->
+            <!--<name>marcinmichalik-oriental</name>-->
+            <!--<url>https://api.bintray.com/maven/marcinmichalik/oriental/oriental-core/;publish=1</url>-->
+        <!--</repository>-->
+    <!--</distributionManagement>-->
 </project>
